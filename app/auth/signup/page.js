@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState } from "react";
 
 export default function SignUp() {
@@ -7,7 +8,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
@@ -15,10 +16,27 @@ export default function SignUp() {
     }
     console.log("Sign-Up Data:", { email, password });
     // (re-setting fields)
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
     // Logic to send data to backend
+    try {
+      const responseServer = fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: { email, password },
+      });
+
+      // (to show user what is going on in backend.)
+      if (responseServer.ok) {
+        alert("Sign-Up successful!");
+      } else {
+        const errorFromServer = await responseServer.json();
+        alert(errorFromServer.error || "Sign-Up failed!");
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again.");
+    }
   };
 
   return (

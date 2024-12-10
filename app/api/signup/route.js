@@ -8,7 +8,9 @@ export const POST = async (request) => {
     const body = await request.json();
 
     // (destructuring data comming from client)
-    const { email, password, role = "user" } = body;
+    const { email, password } = body;
+    // Set role  for admin and user
+    const role = email === "admin@gmail.com" ? "admin" : "user";
     // (See data is reaching in  variables)
     console.log("data is reaching to signup route. ", email, password, role);
 

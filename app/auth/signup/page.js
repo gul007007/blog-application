@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState } from "react";
 
 export default function SignUp() {
@@ -21,10 +20,10 @@ export default function SignUp() {
     setConfirmPassword("");
     // Logic to send data to backend
     try {
-      const responseServer = fetch("/api/signup", {
+      const responseServer = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: { email, password },
+        body: JSON.stringify({ email, password }),
       });
 
       // (to show user what is going on in backend.)

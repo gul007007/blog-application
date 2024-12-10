@@ -1,15 +1,42 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Sign-In Data:", { email, password });
     // Logic to send data to backend
+    try {
+      const response = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      // (checking data response from backend)
+      console.log("data from backend.", data);
+
+      if (response.ok) {
+        //  Redirect based on the user role returned from the backend
+        if (data.role === "user") {
+          router.push("/home");
+        } else if (data.role === "admin") {
+          router.push("/dashboard");
+        }
+      } else {
+        alert(data.error || "Sign-In failed!");
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again.");
+      console.error("Sign-In Error:", error.message);
+    }
   };
 
   return (

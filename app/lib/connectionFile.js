@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
+// Get connection string from .env.local file
 const connectionStr = process.env.connection_str;
 
 const connect = async () => {
   const connectionState = mongoose.connection.readyState;
-  console.log("connection state to db: ", connectionState);
+  console.log("connection state: ", connectionState);
 
   if (connectionState === 1) {
     console.log("Already connected");
@@ -17,10 +18,10 @@ const connect = async () => {
 
   try {
     mongoose.connect(connectionStr, {
-      dbName: "blogDB",
+      dbName: "AllBlog",
       bufferCommands: true,
     });
-    console.log("db Connected");
+    console.log("db Connected with backend.");
   } catch (err) {
     console.log("Error: ", err);
   }

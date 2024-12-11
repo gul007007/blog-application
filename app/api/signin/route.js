@@ -25,7 +25,7 @@ export const POST = async (request) => {
     // Create JWT token using jose
     const token = await new SignJWT({ id: user._id, role: user.role })
       .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("2h")
+      .setExpirationTime("15m")
       .sign(secretKey);
 
     // (to match token of backend with middleware)

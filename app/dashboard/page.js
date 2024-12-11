@@ -1,26 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
   // State to manage blogs
-  const [blogs, setBlogs] = useState([
-    { id: 1, title: "Understanding React", status: "Published" },
-    { id: 2, title: "Next.js for Beginners", status: "Draft" },
-    { id: 3, title: "Styling in Tailwind CSS", status: "Published" },
-  ]);
+  const [blogs, setBlogs] = useState([]);
+  // (mock data)
+  // ({ id: 1, title: "Understanding React", status: "Published" },
+  //   { id: 2, title: "Next.js for Beginners", status: "Draft" },
+  //   { id: 3, title: "Styling in Tailwind CSS", status: "Published" },)
 
   // State to control modal visibility
   const [showModal, setShowModal] = useState(false);
 
   // Add new blog post handler
   const handleAddBlog = (newBlog) => {
-    setBlogs((prevBlogs) => [
-      ...prevBlogs,
-      { ...newBlog, id: prevBlogs.length + 1 },
-    ]);
+    setBlogs((prevBlogs) => {
+      console.log("prevBlogs....", prevBlogs);
+      return [...prevBlogs, { ...newBlog, _id: prevBlogs.length + 10 }];
+    });
+
     setShowModal(false); // Close the modal after adding
   };
+
+  // Fetch blog posts on page load
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("/api/dashboardData", { method: "GET" });
+        if (!response.ok) {
+          throw new Error("Failed to fetch blog posts.");
+        }
+        const data = await response.json();
+        setBlogs(data);
+      } catch (error) {
+        console.error("Error fetching blogs:", error.message);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto p-8">
@@ -48,7 +67,8 @@ export default function AdminDashboard() {
         </thead>
         <tbody>
           {blogs.map((blog) => (
-            <tr key={blog.id}>
+            <tr key={blog._id}>
+              {console.log("all blogs from db.", blogs)}
               <td className="border border-gray-300 px-4 py-2">{blog.title}</td>
               <td className="border border-gray-300 px-4 py-2">
                 {blog.status}
@@ -80,15 +100,40 @@ export default function AdminDashboard() {
   );
 }
 
+// (function executed when 'Add New Blog Post' button is clicked at dashboard)
+
 function AddBlogPostForm({ onSave, onClose }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("Draft");
 
-  const handleSubmit = (e) => {
+  // (this will pass dashboard data to backend.)
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newBlog = { title, content, status };
     onSave(newBlog);
+    // (making POST request using api/dashboardData to save it in db.)
+    try {
+      const response = await fetch("/api/dashboardData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, content, status }),
+      });
+
+      // (to show admin what is going on in backend.)
+      if (response.ok) {
+        alert("Blog post added successful!");
+      } else {
+        const errorFromServer = await response.json();
+        alert(errorFromServer.error || "Blog post adding failed!");
+      }
+    } catch (error) {
+      alert("An error occurred in dashboard try block.");
+      console.error("Error while adding blog post:", error.message);
+    }
+
     setTitle("");
     setContent("");
     setStatus("Draft");
@@ -102,7 +147,7 @@ function AddBlogPostForm({ onSave, onClose }) {
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Blog Title"
         required
-        className="border rounded px-4 py-2"
+        className="border rounded px-4 py-2 text-gray-500"
       />
       <textarea
         value={content}
@@ -110,12 +155,12 @@ function AddBlogPostForm({ onSave, onClose }) {
         placeholder="Blog Content"
         rows="5"
         required
-        className="border rounded px-4 py-2"
+        className="border rounded px-4 py-2 text-gray-500"
       ></textarea>
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
-        className="border rounded px-4 py-2"
+        className="border rounded px-4 py-2 text-gray-500"
       >
         <option value="Draft">Draft</option>
         <option value="Published">Published</option>

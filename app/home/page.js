@@ -2,51 +2,54 @@
 
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function BlogListingPage() {
   // Mock blog data
-  const blogs = [
-    {
-      id: 1,
-      title: "Understanding React",
-      snippet: "React makes it painless to create interactive UIs.",
-    },
-    {
-      id: 2,
-      title: "Next.js for Beginners",
-      snippet: "Learn why Next.js is a game-changer for developers.",
-    },
-    {
-      id: 3,
-      title: "Styling in Tailwind CSS",
-      snippet: "Utility-first CSS framework packed with classes.",
-    },
-    {
-      id: 4,
-      title: "Getting Started with MongoDB",
-      snippet: "NoSQL database that scales seamlessly.",
-    },
-    {
-      id: 5,
-      title: "JavaScript ES6 Features",
-      snippet: "Explore the new features in ES6.",
-    },
-    {
-      id: 6,
-      title: "How to Deploy with Vercel",
-      snippet: "Deploy your Next.js apps with ease.",
-    },
-    {
-      id: 7,
-      title: "Why Choose TypeScript?",
-      snippet: "Strong typing for safer code.",
-    },
-    {
-      id: 8,
-      title: "Introduction to GraphQL",
-      snippet: "Query your APIs with flexibility.",
-    },
-  ];
+  // const blogs = [
+  //   {
+  //     id: 1,
+  //     title: "Understanding React",
+  //     snippet: "React makes it painless to create interactive UIs.",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Next.js for Beginners",
+  //     snippet: "Learn why Next.js is a game-changer for developers.",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Styling in Tailwind CSS",
+  //     snippet: "Utility-first CSS framework packed with classes.",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Getting Started with MongoDB",
+  //     snippet: "NoSQL database that scales seamlessly.",
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "JavaScript ES6 Features",
+  //     snippet: "Explore the new features in ES6.",
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "How to Deploy with Vercel",
+  //     snippet: "Deploy your Next.js apps with ease.",
+  //   },
+  //   {
+  //     id: 7,
+  //     title: "Why Choose TypeScript?",
+  //     snippet: "Strong typing for safer code.",
+  //   },
+  //   {
+  //     id: 8,
+  //     title: "Introduction to GraphQL",
+  //     snippet: "Query your APIs with flexibility.",
+  //   },
+  // ];
+
+  const [allBlogPosts, setAllBlogPosts] = useState([]);
 
   const blogsPerPage = 4; // Number of blogs per page
   const searchParams = useSearchParams(); // Access query parameters
@@ -60,19 +63,38 @@ export default function BlogListingPage() {
   // Calculate the blogs to display
   const startIndex = (currentPage - 1) * blogsPerPage;
   const endIndex = startIndex + blogsPerPage;
-  const displayedBlogs = blogs.slice(startIndex, endIndex);
+  const displayedBlogs = allBlogPosts.slice(startIndex, endIndex);
 
   // Total pages
-  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const totalPages = Math.ceil(allBlogPosts.length / blogsPerPage);
 
   // Handle pagination click
   const handlePageChange = (page) => {
-    console.log('page value from function => ',page);
-    
+    console.log("page value from function => ", page);
+
     if (page > 0 && page <= totalPages) {
       router.push(`/home?page=${page}`);
     }
   };
+
+  // (Fetching all blog posts from db via backend)
+  useEffect(() => {
+    // Fetch blogs data from backend
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("/api/allBlogPosts");
+        if (!response.ok) {
+          throw new Error("Failed to fetch blogs.");
+        }
+        const data = await response.json();
+        setAllBlogPosts(data);
+      } catch (error) {
+        console.error("Error fetching blogs:", error.message);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -83,14 +105,14 @@ export default function BlogListingPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         {displayedBlogs.map((blog) => (
           <Link
-            key={blog.id}
-            href={`/blog/${blog.id}`}
+            key={blog._id}
+            href={`/blog/${blog._id}`}
             className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-xl font-semibold mb-2 text-gray-400">
               {blog.title}
             </h2>
-            <p className="text-gray-600">{blog.snippet}</p>
+            <p className="text-gray-600">{blog.content}</p>
           </Link>
         ))}
       </div>

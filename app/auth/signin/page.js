@@ -49,7 +49,7 @@ export default function SignIn() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="border rounded px-4 py-2"
+          className="border rounded px-4 py-2 text-gray-500"
         />
         <input
           type="password"
@@ -57,7 +57,7 @@ export default function SignIn() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="border rounded px-4 py-2"
+          className="border rounded px-4 py-2 text-gray-500"
         />
         <button
           type="submit"

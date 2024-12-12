@@ -37,3 +37,44 @@ export const GET = async () => {
     return NextResponse.json({ error: "Error fetching blogs: " + error.message }, { status: 500 });
   }
 };
+
+// PUT: update a blog post data
+export async function PUT(request) {
+  try {
+    const { _id, title, content, status } = await request.json();
+    await connect();
+
+    const updatedBlog = await BlogPostSchema.findByIdAndUpdate(
+      _id,
+      { title, content, status },
+      { new: true }
+    );
+
+    if (!updatedBlog) {
+      return new Response(JSON.stringify({ error: "Blog post not found!" }), { status: 404 });
+    }
+
+    return new Response(JSON.stringify(updatedBlog), { status: 200 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+}
+
+// Delete: delete particular blog post from db.
+
+export async function DELETE(request) {
+  try {
+    const { _id } = await request.json();
+    await connect();
+
+    const deletedBlog = await BlogPostSchema.findByIdAndDelete(_id);
+
+    if (!deletedBlog) {
+      return new Response(JSON.stringify({ error: "Blog post not found!" }), { status: 404 });
+    }
+
+    return new Response(JSON.stringify({ message: "Blog post deleted successfully!" }), { status: 200 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+}

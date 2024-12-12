@@ -10,17 +10,62 @@ export default function AdminDashboard() {
   //   { id: 2, title: "Next.js for Beginners", status: "Draft" },
   //   { id: 3, title: "Styling in Tailwind CSS", status: "Published" },)
 
+  const [editingBlog, setEditingBlog] = useState(null); // Holds the blog being edited when you want to edit any blog post.
+
   // State to control modal visibility
   const [showModal, setShowModal] = useState(false);
 
-  // Add new blog post handler
+  // Add new blog post handler (newBlog => object)
   const handleAddBlog = (newBlog) => {
     setBlogs((prevBlogs) => {
-      console.log("prevBlogs....", prevBlogs);
-      return [...prevBlogs, { ...newBlog, _id: prevBlogs.length + 10 }];
+      const blogIndex = prevBlogs.findIndex((blog) => blog._id === newBlog._id);
+
+      if (blogIndex !== -1) {
+        // Update the existing blog
+        const updatedBlogs = [...prevBlogs];
+        updatedBlogs[blogIndex] = newBlog;
+        return updatedBlogs;
+      } else {
+        // Add a new blog
+        return [...prevBlogs, { ...newBlog, _id: prevBlogs.length + 10 }];
+      }
     });
 
     setShowModal(false); // Close the modal after adding
+  };
+
+  // (Edit particular blog post handler)
+  const handleEditBlogPost = (id) => {
+    console.log("testing edit button with respective id ?..", id);
+
+    const blogToEdit = blogs.find((blog) => blog._id === id);
+    setEditingBlog(blogToEdit);
+    setShowModal(true);
+  };
+
+  // (Delete particular blog post)
+  const handleDeleteBlogPost = async (id) => {
+    try {
+      const response = await fetch(`/api/dashboardData`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ _id: id }),
+      });
+
+      if (response.ok) {
+        // Remove the deleted blog from the state
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== id));
+        alert("Blog post deleted successfully!");
+      } else {
+        const error = await response.json();
+        alert(error.message || "Failed to delete the blog post.");
+      }
+    } catch (error) {
+      console.error("Error deleting blog post:", error.message);
+      alert("An error occurred while deleting the blog post.");
+    }
   };
 
   // Fetch blog posts on page load
@@ -74,10 +119,22 @@ export default function AdminDashboard() {
                 {blog.status}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                <button className="text-blue-600 hover:underline mr-4">
+                <button
+                  className="text-blue-600 hover:underline mr-4"
+                  onClick={() => {
+                    handleEditBlogPost(blog._id);
+                  }}
+                >
                   Edit
                 </button>
-                <button className="text-red-600 hover:underline">Delete</button>
+                <button
+                  className="text-red-600 hover:underline"
+                  onClick={() => {
+                    handleDeleteBlogPost(blog._id);
+                  }}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
@@ -89,9 +146,11 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">Add New Blog Post</h2>
+            {/* (passing editingBlog that carry edit data to modal) */}
             <AddBlogPostForm
               onSave={handleAddBlog}
               onClose={() => setShowModal(false)}
+              blog={editingBlog}
             />
           </div>
         </div>
@@ -102,36 +161,41 @@ export default function AdminDashboard() {
 
 // (function executed when 'Add New Blog Post' button is clicked at dashboard)
 
-function AddBlogPostForm({ onSave, onClose }) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [status, setStatus] = useState("Draft");
+function AddBlogPostForm({ onSave, onClose, blog }) {
+  const [title, setTitle] = useState(blog?.title || "");
+  const [content, setContent] = useState(blog?.content || "");
+  const [status, setStatus] = useState(blog?.status || "Draft");
 
   // (this will pass dashboard data to backend.)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newBlog = { title, content, status };
-    onSave(newBlog);
+    const updatingBlog = { _id: blog?._id, title, content, status };
+    // onSave(newBlog);
     // (making POST request using api/dashboardData to save it in db.)
     try {
       const response = await fetch("/api/dashboardData", {
-        method: "POST",
+        method: blog ? "PUT" : "POST", // PUT for editing, POST for adding
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, content, status }),
+        body: JSON.stringify(updatingBlog),
       });
 
       // (to show admin what is going on in backend.)
       if (response.ok) {
-        alert("Blog post added successful!");
+        alert(
+          blog
+            ? "Blog post updated successfully!"
+            : "Blog post added successfully!"
+        );
+        onSave(updatingBlog);
       } else {
         const errorFromServer = await response.json();
-        alert(errorFromServer.error || "Blog post adding failed!");
+        alert(errorFromServer.error || "Operation failed!");
       }
     } catch (error) {
       alert("An error occurred in dashboard try block.");
-      console.error("Error while adding blog post:", error.message);
+      console.error("Error blog post adding or editing :", error.message);
     }
 
     setTitle("");

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-
+import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import connect from "@/app/lib/connectionFile";
 import User from "@/app/lib/models/User";
 
-const SECRET_KEY = process.env.JWT_SECRET;
+// const SECRET_KEY = process.env.JWT_SECRET;
 
 export const POST = async (request) => {
   try {
@@ -17,6 +17,17 @@ export const POST = async (request) => {
 
     if (!user) {
       return NextResponse.json({ error: "User not found!" }, { status: 404 });
+    }
+
+    // Compare entered password with hashed password in DB
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("hash and plain password equal ? ..", isMatch);
+    
+    if (!isMatch) {
+      return NextResponse.json(
+        { error: "Invalid credentials!" },
+        { status: 401 }
+      );
     }
 
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);

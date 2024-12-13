@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import UserNavigation from "../components/UserNavigation";
 
 export default function BlogListingPage() {
   // Mock blog data
@@ -97,46 +98,52 @@ export default function BlogListingPage() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      {/* Main Heading */}
-      <h1 className="text-3xl font-bold text-center my-8">Blog Listing Page</h1>
+    <>
+      <UserNavigation />
+      
+      <div className="max-w-4xl mx-auto p-4">
+        {/* Main Heading */}
+        <h1 className="text-3xl font-bold text-center my-8">
+          Blog Listing Page
+        </h1>
 
-      {/* Blog Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-        {displayedBlogs.map((blog) => (
-          <Link
-            key={blog._id}
-            href={`/blog/${blog._id}`}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+        {/* Blog Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+          {displayedBlogs.map((blog) => (
+            <Link
+              key={blog._id}
+              href={`/blog/${blog._id}`}
+              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+            >
+              <h2 className="text-xl font-semibold mb-2 text-gray-400">
+                {blog.title}
+              </h2>
+              <p className="text-gray-600 line-clamp-3">{blog.content}</p>
+            </Link>
+          ))}
+        </div>
+
+        {/* Pagination Buttons */}
+        <div className="flex justify-center items-center gap-2">
+          <button
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:bg-gray-200"
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
           >
-            <h2 className="text-xl font-semibold mb-2 text-gray-400">
-              {blog.title}
-            </h2>
-            <p className="text-gray-600">{blog.content}</p>
-          </Link>
-        ))}
+            Previous
+          </button>
+
+          <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
+
+          <button
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:bg-gray-200"
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
-
-      {/* Pagination Buttons */}
-      <div className="flex justify-center items-center gap-2">
-        <button
-          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:bg-gray-200"
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          Previous
-        </button>
-
-        <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
-
-        <button
-          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:bg-gray-200"
-          disabled={currentPage === totalPages}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    </>
   );
 }

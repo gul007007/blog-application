@@ -1,7 +1,7 @@
 import connect from "@/app/lib/connectionFile";
 import User from "@/app/lib/models/User";
 import { NextResponse } from "next/server";
-
+import bcrypt from "bcryptjs";
 export const POST = async (request) => {
   try {
     // (Grab data from attached with request body) ~ (default role=user)
@@ -22,10 +22,16 @@ export const POST = async (request) => {
       return new Response("User already exists.", { status: 400 });
     }
 
+    // (convert password into hash then pass to db. avoid plain password)
+    // Hash the password before storing it in the database
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log("salt + hash password..", salt, hashedPassword);
+
     //   (creating user account using Schema.)
     const newUser = new User({
       email,
-      password,
+      password: hashedPassword,
       role,
     });
 

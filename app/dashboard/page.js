@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdminNavigation from "../components/AdminNavigation";
 
 export default function AdminDashboard() {
   // State to manage blogs
@@ -87,75 +88,81 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      {/* Main Heading */}
-      <h1 className="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
+    <>
+      <AdminNavigation />
 
-      {/* Add New Blog Button */}
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Add New Blog Post
-        </button>
-      </div>
+      <div className="max-w-6xl mx-auto p-8">
+        {/* Main Heading */}
+        <h1 className="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
 
-      {/* Blog List Table */}
-      <table className="w-full border-collapse border border-gray-300 text-left">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 px-4 py-2">Title</th>
-            <th className="border border-gray-300 px-4 py-2">Status</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blogs.map((blog) => (
-            <tr key={blog._id}>
-              {console.log("all blogs from db.", blogs)}
-              <td className="border border-gray-300 px-4 py-2">{blog.title}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                {blog.status}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                <button
-                  className="text-blue-600 hover:underline mr-4"
-                  onClick={() => {
-                    handleEditBlogPost(blog._id);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="text-red-600 hover:underline"
-                  onClick={() => {
-                    handleDeleteBlogPost(blog._id);
-                  }}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Add Blog Post Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Add New Blog Post</h2>
-            {/* (passing editingBlog that carry edit data to modal) */}
-            <AddBlogPostForm
-              onSave={handleAddBlog}
-              onClose={() => setShowModal(false)}
-              blog={editingBlog}
-            />
-          </div>
+        {/* Add New Blog Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Add New Blog Post
+          </button>
         </div>
-      )}
-    </div>
+
+        {/* Blog List Table */}
+        <table className="w-full border-collapse border border-gray-300 text-left">
+          <thead>
+            <tr>
+              <th className="border border-gray-300 px-4 py-2">Title</th>
+              <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {blogs.map((blog) => (
+              <tr key={blog._id}>
+                {console.log("all blogs from db.", blogs)}
+                <td className="border border-gray-300 px-4 py-2">
+                  {blog.title}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {blog.status}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <button
+                    className="text-blue-600 hover:underline mr-4"
+                    onClick={() => {
+                      handleEditBlogPost(blog._id);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="text-red-600 hover:underline"
+                    onClick={() => {
+                      handleDeleteBlogPost(blog._id);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Add Blog Post Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
+              <h2 className="text-xl font-bold mb-4">Add New Blog Post</h2>
+              {/* (passing editingBlog that carry edit data to modal) */}
+              <AddBlogPostForm
+                onSave={handleAddBlog}
+                onClose={() => setShowModal(false)}
+                blog={editingBlog}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

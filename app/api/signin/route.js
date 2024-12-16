@@ -42,16 +42,22 @@ export const POST = async (request) => {
     // (to match token of backend with middleware)
     console.log("token in backend ", token);
 
-    // (checking code runing in production or local)
-    const isProduction = process.env.NODE_ENV === "production";
     // (setting token in browser cookie via backend)
     // Store token in an HttpOnly cookie
+    // return new Response(JSON.stringify({ role: user.role }), {
+    //   status: 200,
+    //   headers: {
+    //     "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=Strict;`,
+    //   },
+    // });
+
     return new Response(JSON.stringify({ role: user.role }), {
       status: 200,
       headers: {
-        "Set-Cookie": `token=${token}; HttpOnly; Path=/; ${
-          isProduction ? "Secure; SameSite=None;" : ""
-        }`,
+        "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=None;`,
+        "Access-Control-Allow-Origin": "https://yourdomain.com", // Use your domain
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       },
     });
   } catch (error) {

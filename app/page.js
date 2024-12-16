@@ -1,9 +1,12 @@
+import Initial from "./components/Initial";
 
 
 export default function Home() {
   return (
     <>
-        <h1>Welcome to Next.js!</h1>
+        <Initial />
+        
+        <h1 className="text-center text-xl">Welcome to Next.js!</h1>
         
     </>
   );

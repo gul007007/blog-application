@@ -33,6 +33,7 @@ export const POST = async (request) => {
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
     console.log("SECRET KEY in backend", secretKey);
 
+    
     // Create JWT token using jose
     const token = await new SignJWT({ id: user._id, role: user.role })
       .setProtectedHeader({ alg: "HS256" })
@@ -47,7 +48,7 @@ export const POST = async (request) => {
     return new Response(JSON.stringify({ role: user.role }), {
       status: 200,
       headers: {
-        "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=Lax;`,
+        "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=None;`,
       },
     });
   } catch (error) {

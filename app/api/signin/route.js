@@ -22,7 +22,7 @@ export const POST = async (request) => {
     // Compare entered password with hashed password in DB
     const isMatch = await bcrypt.compare(password, user.password);
     console.log("hash and plain password equal ? ..", isMatch);
-    
+
     if (!isMatch) {
       return NextResponse.json(
         { error: "Invalid credentials!" },
@@ -33,7 +33,6 @@ export const POST = async (request) => {
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
     console.log("SECRET KEY in backend", secretKey);
 
-    
     // Create JWT token using jose
     const token = await new SignJWT({ id: user._id, role: user.role })
       .setProtectedHeader({ alg: "HS256" })
@@ -51,6 +50,7 @@ export const POST = async (request) => {
         "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=None;`,
       },
     });
+    
   } catch (error) {
     return NextResponse.json(
       { error: "Error during sign-in: " + error.message },

@@ -55,7 +55,7 @@ export const POST = async (request) => {
       status: 200,
       headers: {
         "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=None;`,
-        "Access-Control-Allow-Origin": "https://yourdomain.com", // Use your domain
+        "Access-Control-Allow-Origin": "https://blog-application-rust-ten.vercel.app/", // Use your domain
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       },

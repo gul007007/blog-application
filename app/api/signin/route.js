@@ -33,6 +33,7 @@ export const POST = async (request) => {
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
     console.log("SECRET KEY in backend", secretKey);
 
+    
     // Create JWT token using jose
     const token = await new SignJWT({ id: user._id, role: user.role })
       .setProtectedHeader({ alg: "HS256" })

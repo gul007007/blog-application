@@ -47,7 +47,7 @@ export const POST = async (request) => {
     return new Response(JSON.stringify({ role: user.role }), {
       status: 200,
       headers: {
-        "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=Lax;`,
+        "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=None;`,
       },
     });
   } catch (error) {

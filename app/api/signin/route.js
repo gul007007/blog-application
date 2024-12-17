@@ -44,20 +44,10 @@ export const POST = async (request) => {
 
     // (setting token in browser cookie via backend)
     // Store token in an HttpOnly cookie
-    // return new Response(JSON.stringify({ role: user.role }), {
-    //   status: 200,
-    //   headers: {
-    //     "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=Strict;`,
-    //   },
-    // });
-
     return new Response(JSON.stringify({ role: user.role }), {
       status: 200,
       headers: {
         "Set-Cookie": `token=${token}; HttpOnly; Path=/; Secure; SameSite=None;`,
-        "Access-Control-Allow-Origin": "https://blog-application-rust-ten.vercel.app/", // Use your domain
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       },
     });
   } catch (error) {
